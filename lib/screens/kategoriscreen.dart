@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:quisgo/config/app_theme.dart'; // Import file tema
+import 'package:provider/provider.dart';
+import 'package:quisgo/config/app_theme.dart';
 import 'package:quisgo/widgets/custom_button.dart';
+import '../provider/app_state_provider.dart';
+import 'quisscreen.dart'; // 1. Tambahkan import untuk QuizScreen
 
 class KategoriScreen extends StatefulWidget {
   const KategoriScreen({super.key});
@@ -18,8 +21,29 @@ class _KategoriScreenState extends State<KategoriScreen> {
     'Logika & Teka-Teki'
   ];
 
+  // 2. Modifikasi fungsi _selectCategory
   void _selectCategory(String category) {
     setState(() => _selectedCategory = category);
+    print("Kategori dipilih: $category");
+
+    // Beri jeda sesaat untuk efek visual sebelum pindah halaman
+    Future.delayed(const Duration(milliseconds: 400), () {
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            // Kirim nama kategori yang dipilih ke QuizScreen
+            builder: (context) => const QuizScreen(),
+          ),
+        ).then((_) {
+          // Setelah kembali dari QuizScreen, reset pilihan kategori
+          // agar tidak ada yang terpilih lagi.
+          setState(() {
+            _selectedCategory = null;
+          });
+        });
+      }
+    });
   }
 
   @override
@@ -33,7 +57,6 @@ class _KategoriScreenState extends State<KategoriScreen> {
         .size
         .height;
 
-    // Tidak ada lagi definisi warna di sini
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: SafeArea(
@@ -42,8 +65,8 @@ class _KategoriScreenState extends State<KategoriScreen> {
           children: [
             Positioned(
               top: screenHeight * 0.12,
-              child: const Text(
-                  'Pilih Kategori', style: AppTextStyles.pageTitle),
+              child:
+              const Text('Pilih Kategori', style: AppTextStyles.pageTitle),
             ),
             Center(
               child: Padding(
@@ -57,9 +80,13 @@ class _KategoriScreenState extends State<KategoriScreen> {
                         text: category,
                         width: screenWidth,
                         fontSize: 20,
-                        // Ukuran font spesifik untuk tombol kategori
                         isSelected: _selectedCategory == category,
-                        onPressed: () => _selectCategory(category),
+                        // Panggil fungsi yang sudah dimodifikasi
+                        onPressed: () {
+                          _selectCategory(category);
+                          final appProvider = context.read<AppStateProvider>();
+                          appProvider.startQuiz(category);
+                        },
                       ),
                     );
                   }).toList(),

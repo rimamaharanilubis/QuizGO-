@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quisgo/config/app_theme.dart'; // Import file tema
+import 'package:provider/provider.dart';
+import 'package:quisgo/config/app_theme.dart';
 import 'package:quisgo/widgets/custom_button.dart';
+import '../provider/app_state_provider.dart';
 import 'kategoriscreen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -30,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
         .size
         .width;
 
-    // Tidak ada lagi definisi warna di sini
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: SafeArea(
@@ -87,8 +88,12 @@ class _HomeScreenState extends State<HomeScreen> {
               child: CustomButton(
                 text: 'Mulai',
                 width: screenWidth * 0.5,
-                fontSize: 35, // Ukuran font spesifik untuk tombol ini
+                fontSize: 35,
                 onPressed: () {
+                  if (_nameController.text.isNotEmpty) {
+                    final appProvider = context.read<AppStateProvider>();
+                    appProvider.setUserName(_nameController.text);
+                  }
                   Navigator.push(context, MaterialPageRoute(
                       builder: (context) => const KategoriScreen()));
                 },

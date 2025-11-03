@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:quisgo/config/app_theme.dart'; // Import file tema
+import 'package:quisgo/config/app_theme.dart';
 import 'package:quisgo/screens/homescreen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -39,7 +39,6 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Semua warna dan gaya teks sekarang diambil dari file tema
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: Center(

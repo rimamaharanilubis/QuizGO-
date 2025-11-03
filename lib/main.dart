@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:quisgo/provider/app_state_provider.dart';
 import 'package:quisgo/screens/splashscreen.dart'; // Impor SplashScreen
 
 void main() {
@@ -10,17 +12,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'QuizGO!',
-      theme: ThemeData(
-        primarySwatch: Colors.purple,
-        //Menetapkan font default untuk seluruh aplikasi
-        fontFamily: 'Montserrat',
+    return ChangeNotifierProvider(
+      create: (context) => AppStateProvider(),
+      child: MaterialApp(
+        title: 'QuizGO!',
+        theme: ThemeData(
+          primarySwatch: Colors.purple,
+          //Menetapkan font default untuk seluruh aplikasi
+          fontFamily: 'Montserrat',
+        ),
+        //Menonaktifkan banner "Debug"
+        debugShowCheckedModeBanner: false,
+        //SplashScreen sebagai halaman pertama yang muncul
+        home: const SplashScreen(),
       ),
-      //Menonaktifkan banner "Debug"
-      debugShowCheckedModeBanner: false,
-      //SplashScreen sebagai halaman pertama yang muncul
-      home: const SplashScreen(),
     );
   }
 }

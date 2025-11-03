@@ -36,9 +36,7 @@ class _CustomButtonState extends State<CustomButton> {
     // 2. Tentukan warna teks yang benar
     //    - Jika tombol DIPILIH, warna teksnya UNGU.
     //    - Jika tidak (baik normal maupun ditekan), warnanya selalu EMAS.
-    final Color finalTextColor = widget.isSelected
-        ? AppColors.primary
-        : AppColors.accent;
+    final Color finalTextColor = AppColors.accent;
 
     // 3. Tentukan efek shadow (glow)
     final List<BoxShadow>? buttonShadow = showGlow
