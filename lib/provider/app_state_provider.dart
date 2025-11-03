@@ -83,7 +83,6 @@ class AppStateProvider extends ChangeNotifier {
     _score = 0;
     _isAnswered = false;
     _selectedAnswerIndex = null;
-    // --- TAMBAHAN BARU ---
     _userAnswers = {};
     notifyListeners();
   }

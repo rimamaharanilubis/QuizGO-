@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quisgo/provider/app_state_provider.dart';
-import 'package:quisgo/screens/splashscreen.dart'; // Impor SplashScreen
+import 'package:quisgo/screens/splashscreen.dart';
 
 void main() {
   runApp(const MyApp());
