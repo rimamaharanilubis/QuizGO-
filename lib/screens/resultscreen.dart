@@ -3,21 +3,19 @@ import 'package:provider/provider.dart';
 import 'package:quisgo/config/app_theme.dart';
 import 'package:quisgo/provider/app_state_provider.dart';
 import 'package:quisgo/widgets/custom_button.dart';
+import 'reviewscreen.dart';
 
 class ResultScreen extends StatelessWidget {
   const ResultScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Ambil data dari provider
     final provider = Provider.of<AppStateProvider>(context, listen: false);
     final userName = provider.userName.isNotEmpty ? provider.userName : "User";
     final score = provider.score;
     final totalQuestions = provider.questions.length;
-
-    // Hitung skor akhir dalam skala 100
-    final finalScore = totalQuestions > 0 ? (score * 100 / totalQuestions)
-        .round() : 0;
+    final finalScore =
+    totalQuestions > 0 ? (score * 100 / totalQuestions).round() : 0;
 
     return Scaffold(
       backgroundColor: AppColors.primary,
@@ -28,7 +26,6 @@ class ResultScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // 1. Ucapan Selamat
                 Text(
                   'Selamat, $userName!',
                   textAlign: TextAlign.center,
@@ -41,7 +38,6 @@ class ResultScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 80),
 
-                // 2. Tampilan Skor
                 const Text(
                   'Skor Kamu:',
                   style: TextStyle(
@@ -62,23 +58,25 @@ class ResultScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 80),
 
-                // 3. Tombol "Lihat Jawaban Yang Benar"
                 CustomButton(
-                  text: "Lihat Jawaban Yang Benar",
-                  fontSize: 18,
+                  text: "Lihat Jawaban\nYang Benar",
+                  fontSize: 36,
+                  width: 304,
                   onPressed: () {
-                    // TODO: Buat halaman untuk menampilkan daftar jawaban
-                    print("Tombol 'Lihat Jawaban' ditekan.");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ReviewScreen()),
+                    );
                   },
                 ),
                 const SizedBox(height: 20),
 
-                // 4. Tombol "Coba Lagi"
                 CustomButton(
                   text: "Coba Lagi",
-                  fontSize: 18,
+                  fontSize: 36,
+                  width: 200,
                   onPressed: () {
-                    // Kembali ke halaman Kategori (pop dua kali: QuizScreen -> KategoriScreen)
                     int count = 0;
                     Navigator.popUntil(context, (route) {
                       return count++ == 2;

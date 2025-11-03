@@ -10,17 +10,28 @@ class AppStateProvider extends ChangeNotifier {
   int _score = 0;
   int? _selectedAnswerIndex;
   bool _isAnswered = false;
+
+  Map<int, int> _userAnswers = {};
+
   String get userName => _userName;
+
   String get selectedCategory => _selectedCategory;
+
   List<Question> get questions => _questions;
+
   int get currentQuestionIndex => _currentQuestionIndex;
+
   int get score => _score;
 
   Question? get currentQuestion =>
       _questions.isNotEmpty ? _questions[_currentQuestionIndex] : null;
 
   int? get selectedAnswerIndex => _selectedAnswerIndex;
+
   bool get isAnswered => _isAnswered;
+
+  Map<int, int> get userAnswers => _userAnswers;
+
   double get progress =>
       _questions.isEmpty ? 0 : (_currentQuestionIndex + 1) / _questions.length;
 
@@ -31,13 +42,13 @@ class AppStateProvider extends ChangeNotifier {
 
   void startQuiz(String category) {
     _selectedCategory = category;
-    _questions = List<Question>.from(
-        quizData[category] ?? []);
+    _questions = List<Question>.from(quizData[category] ?? []);
     _questions.shuffle();
     _currentQuestionIndex = 0;
     _score = 0;
     _isAnswered = false;
     _selectedAnswerIndex = null;
+    _userAnswers = {};
     notifyListeners();
   }
 
@@ -46,6 +57,7 @@ class AppStateProvider extends ChangeNotifier {
 
     _selectedAnswerIndex = answerIndex;
     _isAnswered = true;
+    _userAnswers[_currentQuestionIndex] = answerIndex;
 
     if (answerIndex == currentQuestion?.correctAnswerIndex) {
       _score++;
@@ -71,6 +83,8 @@ class AppStateProvider extends ChangeNotifier {
     _score = 0;
     _isAnswered = false;
     _selectedAnswerIndex = null;
+    // --- TAMBAHAN BARU ---
+    _userAnswers = {};
     notifyListeners();
   }
 }
