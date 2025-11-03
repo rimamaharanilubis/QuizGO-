@@ -34,6 +34,5 @@
 
 - **Desain UI/UX (Figma Community):**
   (https://www.figma.com/design/MJSc8EBbBaS0t0PGtv46BI/QuizGO-?node-id=32-239&p=f&t=KcjsAcG3EdR8JKE0-0)
-  *(Catatan: Ini adalah contoh link sumber. Sesuaikan jika kamu menggunakan sumber lain).*
 
     
