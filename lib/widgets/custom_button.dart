@@ -27,18 +27,8 @@ class _CustomButtonState extends State<CustomButton> {
   @override
   Widget build(BuildContext context) {
     final bool showGlow = _isPressed && !widget.isSelected;
-
-    // --- LOGIKA TAMPILAN YANG DIPERBAIKI ---
-
-    // 1. Tentukan warna latar
     final Color bgColor = showGlow ? AppColors.primary : AppColors.field;
-
-    // 2. Tentukan warna teks yang benar
-    //    - Jika tombol DIPILIH, warna teksnya UNGU.
-    //    - Jika tidak (baik normal maupun ditekan), warnanya selalu EMAS.
     final Color finalTextColor = AppColors.accent;
-
-    // 3. Tentukan efek shadow (glow)
     final List<BoxShadow>? buttonShadow = showGlow
         ? [
       BoxShadow(
@@ -48,8 +38,6 @@ class _CustomButtonState extends State<CustomButton> {
       ),
     ]
         : null;
-
-    // 4. Tentukan border (garis tepi)
     final Border? border = widget.isSelected
         ? Border.all(color: AppColors.border, width: 3)
         : showGlow
@@ -77,7 +65,6 @@ class _CustomButtonState extends State<CustomButton> {
           widget.text,
           textAlign: TextAlign.center,
           style: AppTextStyles.buttonText(widget.fontSize).copyWith(
-            // Terapkan warna teks yang sudah ditentukan dengan benar
             color: finalTextColor,
           ),
         ),

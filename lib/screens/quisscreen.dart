@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quisgo/config/app_theme.dart';
 import 'package:quisgo/provider/app_state_provider.dart';
+import 'package:quisgo/screens/resultscreen.dart'; // Pastikan import ini ada
 
 class QuizScreen extends StatefulWidget {
-  // Tidak perlu lagi menerima kategori di sini, karena provider yang akan mengaturnya.
   const QuizScreen({super.key});
 
   @override
@@ -13,36 +13,27 @@ class QuizScreen extends StatefulWidget {
 }
 
 class _QuizScreenState extends State<QuizScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Pindahkan logika `startQuiz` ke sini jika diperlukan,
-    // tapi lebih baik dipanggil saat navigasi dari KategoriScreen.
-  }
-
   void _handleAnswer(BuildContext context, int selectedIndex) {
     final provider = Provider.of<AppStateProvider>(context, listen: false);
-    if (provider.isAnswered) return; // Jangan biarkan jawaban diubah
+    if (provider.isAnswered) return;
 
-    // 1. Kirim jawaban ke provider
     provider.submitAnswer(selectedIndex);
 
-    // 2. Otomatis pindah ke soal berikutnya setelah beberapa saat
     Timer(const Duration(seconds: 2), () {
-      // Cek apakah kuis sudah selesai
       if (provider.currentQuestionIndex < provider.questions.length - 1) {
         provider.nextQuestion();
       } else {
-        // TODO: Navigasi ke halaman hasil/skor
-        print("Kuis Selesai! Skor Akhir: ${provider.score}");
-        Navigator.pop(context); // Kembali ke halaman kategori untuk sementara
+        // Navigasi ke ResultScreen saat kuis selesai
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const ResultScreen()),
+        );
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Gunakan Consumer atau context.watch untuk mendapatkan state dari provider
     return Consumer<AppStateProvider>(
       builder: (context, provider, child) {
         if (provider.questions.isEmpty) {
@@ -68,7 +59,7 @@ class _QuizScreenState extends State<QuizScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // 1. Progress Bar (menggunakan data dari provider)
+                  // Progress bar
                   Container(
                     height: 12,
                     decoration: BoxDecoration(
@@ -85,7 +76,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(6),
                       child: LinearProgressIndicator(
-                        value: provider.progress, // <-- Data dari provider
+                        value: provider.progress,
                         backgroundColor: Colors.transparent,
                         valueColor: const AlwaysStoppedAnimation<Color>(Colors
                             .white),
@@ -94,10 +85,10 @@ class _QuizScreenState extends State<QuizScreen> {
                   ),
                   const SizedBox(height: 60),
 
-                  // 2. Teks Pertanyaan (menggunakan data dari provider)
+                  // Teks Pertanyaan
                   Text(
                     '${provider.currentQuestionIndex + 1}. ${currentQuestion
-                        .text}', // <-- Data dari provider
+                        .text}',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontFamily: 'Montserrat',
@@ -108,23 +99,23 @@ class _QuizScreenState extends State<QuizScreen> {
                   ),
                   const Spacer(),
 
-                  // 3. Pilihan Jawaban (menggunakan data dari provider)
+                  // Pilihan Jawaban
                   ...List.generate(currentQuestion.options.length, (index) {
-                    Color? glowColor;
-                    bool isSelectedForUI = false;
+                    Color? finalGlowColor;
+                    bool isFinalSelected = false;
 
                     if (provider.isAnswered) {
-                      bool isCorrectAnswer = index ==
-                          currentQuestion.correctAnswerIndex;
-                      bool isSelectedAnswer = index ==
-                          provider.selectedAnswerIndex;
+                      bool isCorrectAnswer =
+                          index == currentQuestion.correctAnswerIndex;
+                      bool isSelectedAnswer =
+                          index == provider.selectedAnswerIndex;
 
                       if (isCorrectAnswer) {
-                        glowColor = Colors.greenAccent;
-                        isSelectedForUI = true;
+                        finalGlowColor = Colors.greenAccent;
+                        isFinalSelected = true;
                       } else if (isSelectedAnswer) {
-                        glowColor = Colors.redAccent;
-                        isSelectedForUI = true;
+                        finalGlowColor = Colors.redAccent;
+                        isFinalSelected = true;
                       }
                     }
 
@@ -132,9 +123,12 @@ class _QuizScreenState extends State<QuizScreen> {
                       padding: const EdgeInsets.only(bottom: 20.0),
                       child: AnswerButton(
                         text: currentQuestion.options[index],
-                        isSelected: isSelectedForUI,
-                        glowColor: glowColor,
-                        onPressed: () => _handleAnswer(context, index),
+                        isSelected: isFinalSelected,
+                        glowColor: finalGlowColor,
+                        // Menonaktifkan tombol setelah jawaban diberikan
+                        onPressed: provider.isAnswered
+                            ? () {}
+                            : () => _handleAnswer(context, index),
                       ),
                     );
                   }),
@@ -149,8 +143,9 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 }
 
-// Widget AnswerButton tidak perlu diubah, tapi saya sertakan lagi untuk kelengkapan
-class AnswerButton extends StatelessWidget {
+// --- PERUBAHAN UTAMA DI SINI ---
+// Mengubah AnswerButton menjadi StatefulWidget
+class AnswerButton extends StatefulWidget {
   final String text;
   final bool isSelected;
   final Color? glowColor;
@@ -165,32 +160,88 @@ class AnswerButton extends StatelessWidget {
   });
 
   @override
+  State<AnswerButton> createState() => _AnswerButtonState();
+}
+
+class _AnswerButtonState extends State<AnswerButton> {
+  bool _isPressed = false;
+
+  @override
   Widget build(BuildContext context) {
+    // Tentukan apakah glow ungu (saat ditekan) harus ditampilkan.
+    // Tombol tidak boleh glow ungu jika sudah dievaluasi (isSelected).
+    final bool showPressGlow = _isPressed && !widget.isSelected;
+
+    // Tentukan warna latar belakang berdasarkan kondisi.
+    final Color bgColor = widget.isSelected
+        ? AppColors.primary // Warna saat jawaban dievaluasi (benar/salah).
+        : showPressGlow
+        ? AppColors.primary // Warna saat ditekan.
+        : AppColors.field; // Warna normal.
+
+    // Tentukan warna teks berdasarkan kondisi.
+    final Color textColor = widget.isSelected
+        ? AppColors.accent // Warna saat jawaban dievaluasi.
+        : showPressGlow
+        ? AppColors.accent // Warna saat DITEKAN.
+        : AppColors.primary; // Warna NORMAL.
+
+    // Tentukan efek shadow (glow) berdasarkan kondisi.
+    final List<BoxShadow>? boxShadow = widget.isSelected
+        ? [ // Glow untuk jawaban benar/salah.
+      BoxShadow(
+        color: (widget.glowColor ?? AppColors.glow).withOpacity(0.7),
+        blurRadius: 15,
+        spreadRadius: 5,
+      )
+    ]
+        : showPressGlow
+        ? [ // Glow ungu saat ditekan.
+      BoxShadow(
+        color: AppColors.glow.withOpacity(0.9),
+        blurRadius: 25,
+        spreadRadius: 8,
+      )
+    ]
+        : null;
+
+    // Tentukan border untuk jawaban yang sudah dievaluasi.
+    final Border? border = widget.isSelected
+        ? Border.all(color: widget.glowColor ?? AppColors.glow, width: 2)
+        : null;
+
     return GestureDetector(
-      onTap: onPressed,
+      // Menggunakan onTapDown, onTapUp, onTapCancel seperti di CustomButton.
+      onTapDown: (_) {
+        if (!widget.isSelected) { // Hanya aktifkan jika belum dijawab.
+          setState(() => _isPressed = true);
+        }
+      },
+      onTapUp: (_) {
+        if (!widget.isSelected) {
+          setState(() => _isPressed = false);
+          widget.onPressed(); // Panggil fungsi _handleAnswer.
+        }
+      },
+      onTapCancel: () {
+        if (!widget.isSelected) {
+          setState(() => _isPressed = false);
+        }
+      },
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : AppColors.field,
+          color: bgColor,
           borderRadius: BorderRadius.circular(30),
-          border: isSelected ? Border.all(
-              color: glowColor ?? AppColors.glow, width: 2) : null,
-          boxShadow: isSelected
-              ? [
-            BoxShadow(
-              color: (glowColor ?? AppColors.glow).withOpacity(0.7),
-              blurRadius: 15,
-              spreadRadius: 5,
-            )
-          ]
-              : null,
+          border: border,
+          boxShadow: boxShadow,
         ),
         child: Text(
-          text,
+          widget.text,
           textAlign: TextAlign.center,
           style: AppTextStyles.buttonText(18).copyWith(
-            color: isSelected ? AppColors.accent : AppColors.primary,
+            color: AppColors.accent, // Menggunakan textColor yang sudah ditentukan.
           ),
         ),
       ),

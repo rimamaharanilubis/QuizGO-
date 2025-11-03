@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:quisgo/config/app_theme.dart';
 import 'package:quisgo/widgets/custom_button.dart';
 import '../provider/app_state_provider.dart';
-import 'quisscreen.dart'; // 1. Tambahkan import untuk QuizScreen
+import 'quisscreen.dart';
 
 class KategoriScreen extends StatefulWidget {
   const KategoriScreen({super.key});
@@ -21,23 +21,18 @@ class _KategoriScreenState extends State<KategoriScreen> {
     'Logika & Teka-Teki'
   ];
 
-  // 2. Modifikasi fungsi _selectCategory
   void _selectCategory(String category) {
     setState(() => _selectedCategory = category);
     print("Kategori dipilih: $category");
 
-    // Beri jeda sesaat untuk efek visual sebelum pindah halaman
     Future.delayed(const Duration(milliseconds: 400), () {
       if (mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            // Kirim nama kategori yang dipilih ke QuizScreen
             builder: (context) => const QuizScreen(),
           ),
         ).then((_) {
-          // Setelah kembali dari QuizScreen, reset pilihan kategori
-          // agar tidak ada yang terpilih lagi.
           setState(() {
             _selectedCategory = null;
           });
@@ -81,7 +76,6 @@ class _KategoriScreenState extends State<KategoriScreen> {
                         width: screenWidth,
                         fontSize: 20,
                         isSelected: _selectedCategory == category,
-                        // Panggil fungsi yang sudah dimodifikasi
                         onPressed: () {
                           _selectCategory(category);
                           final appProvider = context.read<AppStateProvider>();
