@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quisgo/screens/splashscreen.dart'; // 1. Impor SplashScreen
+import 'package:quisgo/screens/splashscreen.dart'; // Impor SplashScreen
 
 void main() {
   runApp(const MyApp());
@@ -13,14 +13,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'QuizGO!',
       theme: ThemeData(
-        // Tema dasar aplikasi, bisa disesuaikan nanti
         primarySwatch: Colors.purple,
-        // Menetapkan font default untuk seluruh aplikasi
+        //Menetapkan font default untuk seluruh aplikasi
         fontFamily: 'Montserrat',
       ),
-      // Menonaktifkan banner "Debug" di pojok kanan atas
+      //Menonaktifkan banner "Debug"
       debugShowCheckedModeBanner: false,
-      // 2. Jadikan SplashScreen sebagai halaman utama (home)
+      //SplashScreen sebagai halaman pertama yang muncul
       home: const SplashScreen(),
     );
   }

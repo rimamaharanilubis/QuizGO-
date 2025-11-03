@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-// import 'package:quisgo/screens/home_screen.dart'; // Ganti dengan halaman tujuan Anda
+import 'package:quisgo/screens/homescreen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,18 +13,16 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Pindah ke halaman lain setelah 3 detik
     Timer(const Duration(seconds: 3), () {
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => const HomeScreen()), // Ganti dengan halaman utama Anda
-      // );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Definisi warna agar mudah diubah dan konsisten
     const Color primaryColor = Color(0xFF1A0033);
     const Color accentColor = Color(0xFFDFC045);
 
@@ -34,13 +32,12 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Container untuk membuat efek glow (cahaya)
             Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: accentColor.withOpacity(0.85),
+                    color: accentColor.withOpacity(0.98),
                     blurRadius: 10.0,
                     spreadRadius: 5.0,
                   ),
@@ -55,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     fontFamily: 'Montserrat',
                     color: accentColor,
                     fontSize: 128,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
               ),
@@ -67,7 +64,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 fontFamily: 'Montserrat',
                 color: accentColor,
                 fontSize: 68,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
                 letterSpacing: 1.5,
               ),
             ),
