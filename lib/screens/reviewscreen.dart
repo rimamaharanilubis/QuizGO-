@@ -31,7 +31,6 @@ class ReviewScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // 1. Progress Bar
                   Container(
                     height: 12,
                     decoration: BoxDecoration(
@@ -41,7 +40,7 @@ class ReviewScreen extends StatelessWidget {
                         BoxShadow(
                           color: AppColors.glow.withOpacity(0.4),
                           blurRadius: 10,
-                          spreadRadius: 2,
+                          spreadRadius: 10,
                         ),
                       ],
                     ),
@@ -49,9 +48,8 @@ class ReviewScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(6),
                       child: LinearProgressIndicator(
                         value: progress,
-                        backgroundColor: Colors.transparent,
-                        valueColor: const AlwaysStoppedAnimation<Color>(Colors
-                            .white),
+                        backgroundColor: Colors.white,
+                        valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
                       ),
                     ),
                   ),
@@ -63,11 +61,11 @@ class ReviewScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontFamily: 'Montserrat',
                       color: AppColors.accent,
-                      fontSize: 24,
+                      fontSize: 26,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 100),
 
                   AnswerReviewCard(
                     title: 'Jawaban Kamu:',
@@ -76,7 +74,7 @@ class ReviewScreen extends StatelessWidget {
                         : "Tidak Dijawab",
                     isCorrect: isCorrect,
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
 
                   AnswerReviewCard(
                     title: 'Jawaban Benar:',
@@ -86,15 +84,21 @@ class ReviewScreen extends StatelessWidget {
                   const Spacer(),
 
                   if (index == questions.length - 1)
-                    CustomButton(
-                      text: "Coba Lagi",
-                      fontSize: 18,
-                      onPressed: () {
-                        int count = 0;
-                        Navigator.popUntil(context, (route) {
-                          return count++ == 3;
-                        });
-                      },
+                    Center(
+                      child: CustomButton(
+                        text: "Coba Lagi",
+                        fontSize: 32,
+                        width: 200,
+                        onPressed: () {
+                          // Navigasi terjadi saat tombol dilepas (onTapUp),
+                          // sehingga efek visual 'glow' akan terlihat sesaat.
+                          int count = 0;
+                          Navigator.popUntil(context, (route) {
+                            return count++ ==
+                                3; // pop 3x: Review -> Result -> Quiz
+                          });
+                        },
+                      ),
                     ),
                   const Spacer(),
                 ],
@@ -132,8 +136,10 @@ class AnswerReviewCard extends StatelessWidget {
         children: [
           Text(
             title,
+            // Saya perbaiki juga warna teks di sini agar sesuai gambar
             style: AppTextStyles.buttonText(18).copyWith(
-                color: AppColors.primary),
+                color: AppColors.accent,
+                fontSize: 30),
           ),
           const SizedBox(height: 8),
           Row(
@@ -143,13 +149,15 @@ class AnswerReviewCard extends StatelessWidget {
                 child: Text(
                   answer,
                   style: AppTextStyles.buttonText(22).copyWith(
-                      color: AppColors.primary, fontWeight: FontWeight.w900),
+                      color: AppColors.accent, // Warna teks disesuaikan
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900),
                 ),
               ),
               Icon(
                 isCorrect ? Icons.check_circle : Icons.cancel,
                 color: isCorrect ? Colors.green : Colors.red,
-                size: 30,
+                size: 45,
               ),
             ],
           ),

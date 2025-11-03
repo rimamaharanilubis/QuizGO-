@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quisgo/config/app_theme.dart';
 import 'package:quisgo/provider/app_state_provider.dart';
-import 'package:quisgo/screens/resultscreen.dart'; // Pastikan import ini ada
+import 'package:quisgo/screens/resultscreen.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
@@ -23,7 +23,6 @@ class _QuizScreenState extends State<QuizScreen> {
       if (provider.currentQuestionIndex < provider.questions.length - 1) {
         provider.nextQuestion();
       } else {
-        // Navigasi ke ResultScreen saat kuis selesai
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const ResultScreen()),
@@ -77,15 +76,13 @@ class _QuizScreenState extends State<QuizScreen> {
                       borderRadius: BorderRadius.circular(6),
                       child: LinearProgressIndicator(
                         value: provider.progress,
-                        backgroundColor: Colors.transparent,
-                        valueColor: const AlwaysStoppedAnimation<Color>(Colors
-                            .white),
+                        backgroundColor: Colors.white,
+                        valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
                       ),
                     ),
                   ),
                   const SizedBox(height: 60),
 
-                  // Teks Pertanyaan
                   Text(
                     '${provider.currentQuestionIndex + 1}. ${currentQuestion
                         .text}',
@@ -99,33 +96,15 @@ class _QuizScreenState extends State<QuizScreen> {
                   ),
                   const Spacer(),
 
-                  // Pilihan Jawaban
                   ...List.generate(currentQuestion.options.length, (index) {
-                    Color? finalGlowColor;
-                    bool isFinalSelected = false;
-
-                    if (provider.isAnswered) {
-                      bool isCorrectAnswer =
-                          index == currentQuestion.correctAnswerIndex;
-                      bool isSelectedAnswer =
-                          index == provider.selectedAnswerIndex;
-
-                      if (isCorrectAnswer) {
-                        finalGlowColor = Colors.greenAccent;
-                        isFinalSelected = true;
-                      } else if (isSelectedAnswer) {
-                        finalGlowColor = Colors.redAccent;
-                        isFinalSelected = true;
-                      }
-                    }
+                    bool isSelected = provider.isAnswered &&
+                        provider.selectedAnswerIndex == index;
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 20.0),
                       child: AnswerButton(
                         text: currentQuestion.options[index],
-                        isSelected: isFinalSelected,
-                        glowColor: finalGlowColor,
-                        // Menonaktifkan tombol setelah jawaban diberikan
+                        isSelected: isSelected,
                         onPressed: provider.isAnswered
                             ? () {}
                             : () => _handleAnswer(context, index),
@@ -143,20 +122,15 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 }
 
-// --- PERUBAHAN UTAMA DI SINI ---
-// Mengubah AnswerButton menjadi StatefulWidget
 class AnswerButton extends StatefulWidget {
   final String text;
   final bool isSelected;
-  final Color? glowColor;
   final VoidCallback onPressed;
-
   const AnswerButton({
     super.key,
     required this.text,
     required this.isSelected,
     required this.onPressed,
-    this.glowColor,
   });
 
   @override
@@ -168,35 +142,11 @@ class _AnswerButtonState extends State<AnswerButton> {
 
   @override
   Widget build(BuildContext context) {
-    // Tentukan apakah glow ungu (saat ditekan) harus ditampilkan.
-    // Tombol tidak boleh glow ungu jika sudah dievaluasi (isSelected).
-    final bool showPressGlow = _isPressed && !widget.isSelected;
-
-    // Tentukan warna latar belakang berdasarkan kondisi.
-    final Color bgColor = widget.isSelected
-        ? AppColors.primary // Warna saat jawaban dievaluasi (benar/salah).
-        : showPressGlow
-        ? AppColors.primary // Warna saat ditekan.
-        : AppColors.field; // Warna normal.
-
-    // Tentukan warna teks berdasarkan kondisi.
-    final Color textColor = widget.isSelected
-        ? AppColors.accent // Warna saat jawaban dievaluasi.
-        : showPressGlow
-        ? AppColors.accent // Warna saat DITEKAN.
-        : AppColors.primary; // Warna NORMAL.
-
-    // Tentukan efek shadow (glow) berdasarkan kondisi.
-    final List<BoxShadow>? boxShadow = widget.isSelected
-        ? [ // Glow untuk jawaban benar/salah.
-      BoxShadow(
-        color: (widget.glowColor ?? AppColors.glow).withOpacity(0.7),
-        blurRadius: 15,
-        spreadRadius: 5,
-      )
-    ]
-        : showPressGlow
-        ? [ // Glow ungu saat ditekan.
+    final bool showGlow = _isPressed || widget.isSelected;
+    final Color bgColor = showGlow ? AppColors.primary : AppColors.field;
+    const Color textColor = AppColors.accent;
+    final List<BoxShadow>? boxShadow = showGlow
+        ? [
       BoxShadow(
         color: AppColors.glow.withOpacity(0.9),
         blurRadius: 25,
@@ -204,23 +154,20 @@ class _AnswerButtonState extends State<AnswerButton> {
       )
     ]
         : null;
-
-    // Tentukan border untuk jawaban yang sudah dievaluasi.
     final Border? border = widget.isSelected
-        ? Border.all(color: widget.glowColor ?? AppColors.glow, width: 2)
+        ? Border.all(color: AppColors.glow, width: 2)
         : null;
 
     return GestureDetector(
-      // Menggunakan onTapDown, onTapUp, onTapCancel seperti di CustomButton.
       onTapDown: (_) {
-        if (!widget.isSelected) { // Hanya aktifkan jika belum dijawab.
+        if (!widget.isSelected) {
           setState(() => _isPressed = true);
         }
       },
       onTapUp: (_) {
         if (!widget.isSelected) {
           setState(() => _isPressed = false);
-          widget.onPressed(); // Panggil fungsi _handleAnswer.
+          widget.onPressed();
         }
       },
       onTapCancel: () {
@@ -241,7 +188,7 @@ class _AnswerButtonState extends State<AnswerButton> {
           widget.text,
           textAlign: TextAlign.center,
           style: AppTextStyles.buttonText(18).copyWith(
-            color: AppColors.accent, // Menggunakan textColor yang sudah ditentukan.
+            color: textColor,
           ),
         ),
       ),

@@ -75,7 +75,6 @@ class _KategoriScreenState extends State<KategoriScreen> {
                         text: category,
                         width: screenWidth,
                         fontSize: 20,
-                        isSelected: _selectedCategory == category,
                         onPressed: () {
                           _selectCategory(category);
                           final appProvider = context.read<AppStateProvider>();
