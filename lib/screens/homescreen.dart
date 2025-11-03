@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:quisgo/config/app_theme.dart'; // Import file tema
+import 'package:quisgo/widgets/custom_button.dart';
+import 'kategoriscreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -8,14 +11,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool _isButtonPressed = false;
+  final TextEditingController _nameController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFF1A0033);
-    const Color accentColor = Color(0xFFDFC045);
-    const Color fieldColor = Color(0xFFD9D9D9);
-
     final screenHeight = MediaQuery
         .of(context)
         .size
@@ -24,46 +29,24 @@ class _HomeScreenState extends State<HomeScreen> {
         .of(context)
         .size
         .width;
-    final buttonBackgroundColor = _isButtonPressed ? primaryColor : fieldColor;
-    const buttonTextColor = accentColor;
-    final List<BoxShadow>? buttonShadow = _isButtonPressed
-        ? [
-      BoxShadow(
-        color: const Color(0xFFB388FF).withOpacity(0.9),
-        blurRadius: 30,
-        spreadRadius: 10,
-      ),
-    ]
-        : null;
 
+    // Tidak ada lagi definisi warna di sini
     return Scaffold(
-      backgroundColor: primaryColor,
+      backgroundColor: AppColors.primary,
       body: SafeArea(
         child: Stack(
           alignment: Alignment.center,
           children: [
             Positioned(
               top: screenHeight * 0.10,
-              child: Column(
+              child: const Column(
                 children: [
-                  const Text(
-                    'Selamat Datang di',
-                    style: TextStyle(
+                  Text('Selamat Datang di', style: TextStyle(
                       fontFamily: 'Montserrat',
-                      color: accentColor,
+                      color: AppColors.accent,
                       fontSize: 36,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const Text(
-                    'QuizGo!',
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
-                      color: accentColor,
-                      fontSize: 40,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
+                      fontWeight: FontWeight.w500)),
+                  Text('QuizGo!', style: AppTextStyles.bigTitle),
                 ],
               ),
             ),
@@ -71,35 +54,28 @@ class _HomeScreenState extends State<HomeScreen> {
               top: screenHeight / 2 - 50,
               child: Column(
                 children: [
-                  const Text(
-                    'Nama:',
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
-                      color: accentColor,
+                  const Text('Nama:', style: TextStyle(fontFamily: 'Montserrat',
+                      color: AppColors.accent,
                       fontSize: 28,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                      fontWeight: FontWeight.w500)),
                   const SizedBox(height: 10),
                   SizedBox(
                     width: screenWidth * 0.8,
                     child: TextField(
+                      controller: _nameController,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                      ),
+                      style: const TextStyle(fontFamily: 'Montserrat',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black),
                       decoration: InputDecoration(
-                        contentPadding:
-                        const EdgeInsets.symmetric(vertical: 16),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 16),
                         filled: true,
-                        fillColor: fieldColor,
+                        fillColor: AppColors.field,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                          borderSide: BorderSide.none,
-                        ),
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: BorderSide.none),
                       ),
                     ),
                   ),
@@ -108,45 +84,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Positioned(
               top: screenHeight / 2 + 100,
-              child: GestureDetector(
-                onTapDown: (_) {
-                  setState(() {
-                    _isButtonPressed = true;
-                  });
+              child: CustomButton(
+                text: 'Mulai',
+                width: screenWidth * 0.5,
+                fontSize: 35, // Ukuran font spesifik untuk tombol ini
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(
+                      builder: (context) => const KategoriScreen()));
                 },
-                onTapUp: (_) {
-                  setState(() {
-                    _isButtonPressed = false;
-                  });
-                },
-                onTapCancel: () {
-                  setState(() {
-                    _isButtonPressed = false;
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 150),
-                  width: screenWidth * 0.5,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  decoration: BoxDecoration(
-                    color: buttonBackgroundColor,
-                    borderRadius: BorderRadius.circular(30.0),
-                    boxShadow: buttonShadow,
-                    border: _isButtonPressed
-                        ? Border.all(color: accentColor.withOpacity(0.5))
-                        : null,
-                  ),
-                  child: const Text(
-                    'Mulai',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
-                      color: buttonTextColor,
-                      fontSize: 35,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
               ),
             ),
           ],

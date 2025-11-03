@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:quisgo/config/app_theme.dart'; // Import file tema
 import 'package:quisgo/screens/homescreen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -9,66 +10,70 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+
   @override
   void initState() {
     super.initState();
+    _animationController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    _fadeAnimation =
+        CurvedAnimation(parent: _animationController, curve: Curves.easeIn);
+    _animationController.forward();
     Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      if (mounted) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()));
+      }
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-    const Color primaryColor = Color(0xFF1A0033);
-    const Color accentColor = Color(0xFFDFC045);
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    // Semua warna dan gaya teks sekarang diambil dari file tema
     return Scaffold(
-      backgroundColor: primaryColor,
+      backgroundColor: AppColors.primary,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: accentColor.withOpacity(0.98),
-                    blurRadius: 10.0,
-                    spreadRadius: 5.0,
-                  ),
-                ],
-              ),
-              child: const CircleAvatar(
-                radius: 90,
-                backgroundColor: primaryColor,
-                child: Text(
-                  "Q",
-                  style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    color: accentColor,
-                    fontSize: 128,
-                    fontWeight: FontWeight.w900,
-                  ),
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(color: AppColors.accent.withOpacity(0.8),
+                        blurRadius: 20.0,
+                        spreadRadius: 5.0),
+                  ],
+                ),
+                child: const CircleAvatar(
+                  radius: 90,
+                  backgroundColor: AppColors.primary,
+                  child: Text("Q", style: TextStyle(fontFamily: 'Montserrat',
+                      color: AppColors.accent,
+                      fontSize: 128,
+                      fontWeight: FontWeight.w900)),
                 ),
               ),
-            ),
-            const SizedBox(height: 25),
-            const Text(
-              "QuizGO!",
-              style: TextStyle(
-                fontFamily: 'Montserrat',
-                color: accentColor,
-                fontSize: 68,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1.5,
-              ),
-            ),
-          ],
+              const SizedBox(height: 25),
+              const Text("QuizGO!", style: TextStyle(fontFamily: 'Montserrat',
+                  color: AppColors.accent,
+                  fontSize: 68,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.5)),
+            ],
+          ),
         ),
       ),
     );
