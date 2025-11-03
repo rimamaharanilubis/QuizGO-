@@ -90,12 +90,9 @@ class ReviewScreen extends StatelessWidget {
                         fontSize: 32,
                         width: 200,
                         onPressed: () {
-                          // Navigasi terjadi saat tombol dilepas (onTapUp),
-                          // sehingga efek visual 'glow' akan terlihat sesaat.
                           int count = 0;
                           Navigator.popUntil(context, (route) {
-                            return count++ ==
-                                3; // pop 3x: Review -> Result -> Quiz
+                            return count++ == 3;
                           });
                         },
                       ),
@@ -136,10 +133,9 @@ class AnswerReviewCard extends StatelessWidget {
         children: [
           Text(
             title,
-            // Saya perbaiki juga warna teks di sini agar sesuai gambar
             style: AppTextStyles.buttonText(18).copyWith(
                 color: AppColors.accent,
-                fontSize: 30),
+                fontSize: 28),
           ),
           const SizedBox(height: 8),
           Row(
@@ -149,7 +145,7 @@ class AnswerReviewCard extends StatelessWidget {
                 child: Text(
                   answer,
                   style: AppTextStyles.buttonText(22).copyWith(
-                      color: AppColors.accent, // Warna teks disesuaikan
+                      color: AppColors.accent,
                       fontSize: 28,
                       fontWeight: FontWeight.w900),
                 ),
