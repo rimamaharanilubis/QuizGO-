@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:quisgo/config/app_theme.dart';
 import 'package:quisgo/widgets/custom_button.dart';
 import '../provider/app_state_provider.dart';
-import 'kategoriscreen.dart';
+import 'categoryscreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
